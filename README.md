@@ -1,4 +1,4 @@
-# Pulseboard — Intent-Driven Operations Dashboard
+# Pulseboard: Intent-Driven Operations Dashboard
 
 A SwiftUI prototype that dynamically adapts its UI based on real-time operational intent instead of static dashboards.
 
