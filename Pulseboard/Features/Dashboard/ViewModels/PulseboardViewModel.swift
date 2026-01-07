@@ -8,11 +8,43 @@ final class PulseboardViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var signal: OpsSignal
     @Published var intentMode: IntentMode
+    @Published var isSimulating = false
+    
+    // MARK: - Dependencies
+    private let simulator = SignalSimulator()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
     init(signal: OpsSignal = .initial) {
         self.signal = signal
         self.intentMode = IntentResolver.resolve(from: signal)
+        
+        // Bind Simulator -> ViewModel
+        simulator.signalPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newSignal in
+                self?.updateSignal(newSignal)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Simulation Controls
+    
+    func toggleSimulation() {
+        isSimulating.toggle()
+        if isSimulating {
+            simulator.start()
+        } else {
+            simulator.stop()
+        }
+    }
+    
+    func triggerSurge() {
+        simulator.triggerSurge()
+    }
+    
+    func resolveSurge() {
+        simulator.resolveSurge()
     }
     
     // MARK: - Intents (User Actions / System Events)
@@ -20,8 +52,12 @@ final class PulseboardViewModel: ObservableObject {
     /// Updates the operational signal (Simulating backend push)
     func updateSignal(_ newSignal: OpsSignal) {
         self.signal = newSignal
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-            self.intentMode = IntentResolver.resolve(from: newSignal)
+        
+        // NOTE: In Simulation Mode, we let logic drive intent automatically
+        if isSimulating {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                self.intentMode = IntentResolver.resolve(from: newSignal)
+            }
         }
     }
     

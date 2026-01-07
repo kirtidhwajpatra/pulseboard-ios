@@ -26,6 +26,7 @@ extension View {
 // MARK: - Component Definitions
 
 struct OrderStatusCard: View {
+    var count: Int = 1230
     var isSurge: Bool = false
     
     // Left: VIBRANT PEACH section
@@ -46,7 +47,7 @@ struct OrderStatusCard: View {
                 
                 Spacer()
                 
-                Text("1,230")
+                Text("\(count)")
                     // Surge: Slightly heavier font
                     .font(.system(size: 52, weight: isSurge ? .bold : .medium, design: .rounded))
                     .kerning(-1)

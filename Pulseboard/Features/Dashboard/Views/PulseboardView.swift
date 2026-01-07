@@ -42,6 +42,10 @@ struct PulseboardView: View {
                         .padding(.horizontal, 16)
                         .padding(.bottom, 40)
                         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: viewModel.intentMode)
+                        
+                        // 🛠 DevTools Panel
+                        devToolsPanel()
+                            .padding(.bottom, 40)
                     }
                 }
             }
@@ -65,13 +69,60 @@ struct PulseboardView: View {
         .preferredColorScheme(.dark)
     }
     
+    // MARK: - DevTools
+    @ViewBuilder
+    private func devToolsPanel() -> some View {
+        VStack(spacing: 12) {
+            Text("SIMULATION CONTROLS")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+                .tracking(2)
+            
+            HStack(spacing: 16) {
+                Button(action: { viewModel.toggleSimulation() }) {
+                    Label(viewModel.isSimulating ? "PAUSE" : "START", systemImage: viewModel.isSimulating ? "pause.fill" : "play.fill")
+                        .font(.caption.bold())
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(DesignSystem.Colors.cardSurfaceLighter)
+                        .clipShape(Capsule())
+                }
+                
+                Button(action: { viewModel.triggerSurge() }) {
+                    Label("TRIG SURGE", systemImage: "bolt.fill")
+                        .font(.caption.bold())
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.orange.opacity(0.2))
+                        .foregroundStyle(.orange)
+                        .clipShape(Capsule())
+                }
+                
+                Button(action: { viewModel.resolveSurge() }) {
+                    Label("RESOLVE", systemImage: "checkmark.circle.fill")
+                        .font(.caption.bold())
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.green.opacity(0.2))
+                        .foregroundStyle(.green)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+        .padding(20)
+        .background(DesignSystem.Colors.cardSurface.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 20)
+    }
+    
     @ViewBuilder
     private func dashboardContent(for intent: IntentMode) -> some View {
         let isSurge = intent == .surge
         
         switch intent {
         case .peak:
-            OrderStatusCard(isSurge: isSurge)
+            OrderStatusCard(count: viewModel.signal.activeOrders, isSurge: isSurge)
                 .transition(.scale(scale: 0.95).combined(with: .opacity))
             FleetStatusCards(isSurge: isSurge)
                 .transition(.scale(scale: 0.95).combined(with: .opacity))
@@ -89,7 +140,7 @@ struct PulseboardView: View {
         case .surge:
             SurgeAlertCard()
                 .transition(.scale(scale: 0.95).combined(with: .opacity))
-            OrderStatusCard(isSurge: isSurge)
+            OrderStatusCard(count: viewModel.signal.activeOrders, isSurge: isSurge)
                 .transition(.scale(scale: 0.95).combined(with: .opacity))
             FleetStatusCards(isSurge: isSurge)
                 .transition(.scale(scale: 0.95).combined(with: .opacity))
