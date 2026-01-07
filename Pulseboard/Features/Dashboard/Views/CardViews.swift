@@ -1,6 +1,9 @@
 import SwiftUI
 
-// MARK: - Block Card Modifier
+// MARK: - Reusable Styles (Design System)
+
+// Assuming DesignSystem.swift exists from previous steps.
+
 struct BlockCardStyle: ViewModifier {
     var color: Color
     
@@ -8,6 +11,7 @@ struct BlockCardStyle: ViewModifier {
         content
             .background(color)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 }
 
@@ -17,38 +21,45 @@ extension View {
     }
 }
 
-// MARK: - Components
+// MARK: - Component Definitions
+
+// MARK: - Component Definitions
 
 struct OrderStatusCard: View {
-    // The "Peach Split" Card
+    var isSurge: Bool = false
+    
+    // Left: VIBRANT PEACH section
     var body: some View {
         HStack(spacing: 0) {
-            // Left: VIBRANT PEACH section
             VStack(alignment: .leading, spacing: 4) {
                 Text("ACTIVE ORDERS")
                    .font(.system(size: 10, weight: .bold))
                    .tracking(1)
                    .foregroundStyle(DesignSystem.Colors.textDark.opacity(0.7))
                 
-                Text("Said speed was very important to operations.")
+                Text(isSurge ? "High volume detected." : "Live volume from all zones.")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(DesignSystem.Colors.textDark)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 6)
                 
                 Spacer()
                 
                 Text("1,230")
-                    .font(.system(size: 52, weight: .medium, design: .rounded)) // Matches the "75.5%" look
+                    // Surge: Slightly heavier font
+                    .font(.system(size: 52, weight: isSurge ? .bold : .medium, design: .rounded))
                     .kerning(-1)
                     .foregroundStyle(DesignSystem.Colors.textDark)
+                    // Surge: Numeric transition
+                    .contentTransition(.numericText())
+                    .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isSurge)
             }
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(DesignSystem.Colors.peach)
             
-            // Right: DARK section
+            // Right: Ticker / Trend
             VStack {
                 HStack {
                     Spacer()
@@ -62,12 +73,12 @@ struct OrderStatusCard: View {
             .frame(width: 80)
             .background(DesignSystem.Colors.cardSurfaceLighter)
         }
-        .frame(height: 200)
+        .frame(height: 180)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 
-struct PerformanceMetricsCard: View {
+struct FulfillmentCard: View {
     // The "Hollow Ring" Card
     var body: some View {
         HStack(spacing: 0) {
@@ -92,11 +103,11 @@ struct PerformanceMetricsCard: View {
             // Ring
             ZStack {
                 Circle()
-                    .stroke(DesignSystem.Colors.cardSurfaceLighter, lineWidth: 24)
+                    .stroke(DesignSystem.Colors.cardSurfaceLighter, lineWidth: 20)
                 
                 Circle()
-                    .trim(from: 0, to: 0.38) // 38% from ref, but we use logic
-                    .stroke(DesignSystem.Colors.lavender, style: StrokeStyle(lineWidth: 24, lineCap: .round))
+                    .trim(from: 0, to: 0.85)
+                    .stroke(DesignSystem.Colors.lavender, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                 
                 Text("98%")
@@ -104,44 +115,37 @@ struct PerformanceMetricsCard: View {
                     .fontWeight(.bold)
                     .foregroundStyle(DesignSystem.Colors.textPrimary)
             }
-            .frame(width: 110, height: 110)
+            .frame(width: 90, height: 90)
             .padding(24)
         }
-        .frame(height: 180)
+        .frame(height: 160)
         .blockStyle(color: DesignSystem.Colors.cardSurface)
     }
 }
 
-
-struct FleetHealthCard: View {
+struct FleetStatusCards: View {
+    var isSurge: Bool = false
+    
     // The "Triple Block" Row
     var body: some View {
         HStack(spacing: 12) {
-            // Block 1: Cyan
-            FleetBlock(
-                title: "ONLINE",
-                value: "38%",
-                bg: DesignSystem.Colors.cyan,
-                fg: DesignSystem.Colors.textDark
-            )
+            FleetBlock(title: "ONLINE", value: "38%", bg: DesignSystem.Colors.cyan, fg: DesignSystem.Colors.textDark)
+                // Surge: Scale up + Stronger shadow
+                .scaleEffect(isSurge ? 1.02 : 1.0)
+                .shadow(color: isSurge ? DesignSystem.Colors.cyan.opacity(0.3) : .clear, radius: 8, x: 0, y: 4)
+                .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isSurge)
             
-            // Block 2: Soft Blue
-            FleetBlock(
-                title: "IDLE",
-                value: "39%",
-                bg: DesignSystem.Colors.softBlue,
-                fg: DesignSystem.Colors.textDark
-            )
+            FleetBlock(title: "IDLE", value: "39%", bg: DesignSystem.Colors.softBlue, fg: DesignSystem.Colors.textDark)
+                // Surge: De-emphasize
+                .opacity(isSurge ? 0.7 : 1.0)
+                .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isSurge)
             
-            // Block 3: White
-            FleetBlock(
-                title: "OFFLINE",
-                value: "38%",
-                bg: DesignSystem.Colors.offWhite,
-                fg: DesignSystem.Colors.textDark
-            )
+            FleetBlock(title: "OFFLINE", value: "23%", bg: DesignSystem.Colors.offWhite, fg: DesignSystem.Colors.textDark)
+                // Surge: De-emphasize
+                .opacity(isSurge ? 0.7 : 1.0)
+                .animation(.spring(response: 0.45, dampingFraction: 0.85), value: isSurge)
         }
-        .frame(height: 120)
+        .frame(height: 110)
     }
 }
 
@@ -154,39 +158,51 @@ struct FleetBlock: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(value)
-                .font(.title)
+                .font(.title2)
                 .fontWeight(.bold)
                 .foregroundStyle(fg)
             Spacer()
             Text(title)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(fg.opacity(0.8))
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(fg.opacity(0.7))
         }
-        .padding(16)
+        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(bg)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
-struct SurgeInsightsCard: View {
-    // High contrast alert
+struct SurgeAlertCard: View {
+    @State private var isPulsing = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("SURGE ACTIVE", systemImage: "bolt.fill")
+                Label("SURGE DETECTED", systemImage: "bolt.fill")
                     .font(.system(size: 10, weight: .bold))
                     .tracking(1)
                     .foregroundStyle(DesignSystem.Colors.peach)
+                    // Micro-interaction: Icon Pulse
+                    .scaleEffect(isPulsing ? 1.1 : 1.0)
+                    .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: isPulsing)
+                
                 Spacer()
+                
+                // Live Indicator
+                Circle()
+                    .fill(DesignSystem.Colors.peach)
+                    .frame(width: 8, height: 8)
+                    .opacity(isPulsing ? 1.0 : 0.3)
+                    .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isPulsing)
             }
             
-            Text("High Demand Zone")
-                .font(.title2)
+            Text("High Demand Zone Active")
+                .font(.title3)
                 .fontWeight(.bold)
                 .foregroundStyle(DesignSystem.Colors.textPrimary)
             
-            Text("Wait times +15m")
+            Text("Wait times > 45min due to rain.")
                 .font(.subheadline)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
         }
@@ -196,11 +212,20 @@ struct SurgeInsightsCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(DesignSystem.Colors.peach, lineWidth: 2)
+                .opacity(isPulsing ? 1.0 : 0.4) // Breathing border
+                .scaleEffect(isPulsing ? 1.01 : 1.0) // Subtle breathing scale
+                .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: isPulsing)
         )
+        .onAppear {
+            isPulsing = true
+        }
+        .onDisappear {
+            isPulsing = false
+        }
     }
 }
 
-struct LiveOperationsMapCard: View {
+struct LiveZonesCard: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("LIVE ZONES")
@@ -210,17 +235,16 @@ struct LiveOperationsMapCard: View {
                 .padding(20)
             
             Spacer()
-            
             HStack {
                 Spacer()
                 Image(systemName: "map.fill")
                     .font(.largeTitle)
-                    .foregroundStyle(DesignSystem.Colors.textSecondary.opacity(0.2))
+                    .foregroundStyle(DesignSystem.Colors.textSecondary.opacity(0.1))
                 Spacer()
             }
             Spacer()
         }
-        .frame(height: 180)
+        .frame(height: 140)
         .background(DesignSystem.Colors.cardSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
