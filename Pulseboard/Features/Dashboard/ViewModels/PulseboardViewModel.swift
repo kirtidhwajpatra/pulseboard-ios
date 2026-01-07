@@ -39,13 +39,7 @@ final class PulseboardViewModel: ObservableObject {
         }
     }
     
-    func triggerSurge() {
-        simulator.triggerSurge()
-    }
-    
-    func resolveSurge() {
-        simulator.resolveSurge()
-    }
+    // Manual triggers removed - Logic is now autonomous.
     
     // MARK: - Intents (User Actions / System Events)
     

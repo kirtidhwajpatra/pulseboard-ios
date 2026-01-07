@@ -81,31 +81,11 @@ struct PulseboardView: View {
             
             HStack(spacing: 16) {
                 Button(action: { viewModel.toggleSimulation() }) {
-                    Label(viewModel.isSimulating ? "PAUSE" : "START", systemImage: viewModel.isSimulating ? "pause.fill" : "play.fill")
+                    Label(viewModel.isSimulating ? "PAUSE SIMULATION" : "START SIMULATION", systemImage: viewModel.isSimulating ? "pause.fill" : "play.fill")
                         .font(.caption.bold())
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
                         .background(DesignSystem.Colors.cardSurfaceLighter)
-                        .clipShape(Capsule())
-                }
-                
-                Button(action: { viewModel.triggerSurge() }) {
-                    Label("TRIG SURGE", systemImage: "bolt.fill")
-                        .font(.caption.bold())
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.orange.opacity(0.2))
-                        .foregroundStyle(.orange)
-                        .clipShape(Capsule())
-                }
-                
-                Button(action: { viewModel.resolveSurge() }) {
-                    Label("RESOLVE", systemImage: "checkmark.circle.fill")
-                        .font(.caption.bold())
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.green.opacity(0.2))
-                        .foregroundStyle(.green)
                         .clipShape(Capsule())
                 }
             }
