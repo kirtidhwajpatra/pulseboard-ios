@@ -98,13 +98,3 @@ Intent-driven systems reduce the time to insight. By automating the "what should
 *   **Minimal UI Polish**: While the design system is consistent, the visual style is deliberately restrained to focus on behavior and hierarchy.
 *   **Hardcoded Thresholds**: In a production system, surge thresholds would be dynamic, fetched from a remote configuration service based on city/zone tier.
 
-## What Would Be Built Next
-
-1.  **Backend Integration**: connect to a WebSocket stream for real-time `OpsSignal` ingestion.
-2.  **Advanced Anomaly Detection**: Replace simple thresholds with statistical anomaly detection for more accurate surge flagging.
-3.  **Historical Analysis**: Allow operators to "scrub" back in time to see the signals that led to a specific intent state.
-4.  **Role-Based Layouts**: Adapt the intent derivation based on the logged-in user (e.g., Fleet Manager vs. Zone Manager).
-
-## Closing
-
-Pulseboard is an exploration of how intent-driven systems can reduce cognitive load and improve decision-making in high-pressure operational environments.
